@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IoT Sensor Monitoring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+  <div class="live-clock-container">
+    <div class="live-clock" id="liveClock">--:--:--</div>
+    <div class="live-date" id="liveDate">-- -- --</div>
+  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="wrapper">
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+          ☁️ Sensor Menu
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="#dashboard" class="active">📊 Live Dashboard</a></li>
+        <li><a href="#predictionArea">🔮 Prediksi</a></li>
+        <li><a href="#standardReference">📋 Standar Kualitas Udara</a></li>
+        <li><a href="#charts">📈 Grafik</a></li>
+        <li><a href="/download">📥 Download CSV</a></li>
+      </ul>
+    </nav>
+
+    <div class="content" id="mainContent">
+      <header class="header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <h2 class="header-title">IoT Sensor Monitoring</h2>
+      </header>
+
+      <main>
+          <section class="dashboard" id="dashboard">
+            <!-- Combined Live Dashboard Header -->
+            <div class="dashboard-header">
+              <h2>📡 Live Monitoring Dashboard</h2>
+              <div class="dashboard-status">
+                <span class="connection-status" id="connection_status">🔴 Disconnected</span>
+                <span>Last Update: <span id="lastUpdate">--</span></span>
+              </div>
+            </div>
+
+            <div class="gauge-container">
+              <div class="gauge-title">🌡️ Temperatur °C</div>
+              <div id="temp_gauge" class="gauge-chart-div"></div>
+              <div id="temp_status_text" class="sensor-status-text">--</div>
+            </div>
+            <div class="gauge-container">
+              <div class="gauge-title">💧 Kelembapan (%)</div>
+              <div id="humidity_gauge" class="gauge-chart-div"></div>
+              <div id="humidity_status_text" class="sensor-status-text">--</div>
+            </div>
+            <div class="gauge-container">
+              <div class="gauge-title">🌪️ Kualitas Udara (PPM)</div>
+              <div id="air_gauge" class="gauge-chart-div"></div>
+              <div id="air_quality_status_text" class="sensor-status-text">--</div>
+            </div>
+
+            <div class="download-btn-container">
+              <!-- <a href="/download" class="btn btn-primary">Download Rekaman (CSV)</a> -->
+            </div>
+          </section>
+          
+          <div class="prediction-card" id="predictionArea">
+              <div class="prediction-card-header">
+                  🔮 Prediksi Kondisi 15 Menit ke Depan
+              </div>
+              <div class="prediction-card-body">
+                  <div class="prediction-item">
+                      <div class="icon"><i class="fas fa-thermometer-half"></i></div>
+                      <div class="label">Temperatur</div>
+                      <div class="value"><span id="pred_temp_val">--</span> °C</div>
+                      <div class="status" id="pred_temp_status">--</div>
+                  </div>
+                  <div class="prediction-item">
+                      <div class="icon"><i class="fas fa-tint"></i></div>
+                      <div class="label">Kelembapan</div>
+                      <div class="value"><span id="pred_hum_val">--</span> %</div>
+                      <div class="status" id="pred_hum_status">--</div>
+                  </div>
+                  <div class="prediction-item">
+                      <div class="icon"><i class="fas fa-wind"></i></div>
+                      <div class="label">Kualitas Udara</div>
+                      <div class="value"><span id="pred_air_val">--</span> PPM</div>
+                      <div class="status" id="pred_air_status">--</div>
+                  </div>
+              </div>
+              <div class="prediction-card-footer">
+                  <i>Prediksi Terakhir: <span id="prediction_last_update">--:--:--</span></i>
+              </div>
+          </div>
+
+          <!-- SNI Standard Reference -->
+          <div class="standard-reference-card" id="standardReference">
+              <div class="standard-reference-header">
+                  📋 Standar Referensi Kenyamanan Ruangan
+              </div>
+              <div class="standard-reference-body">
+                  <div class="standard-info">
+                      <div class="standard-details">
+                          <div class="standard-category">
+                              <strong>🌡️ Temperatur:</strong>
+                              <ul>
+                                  <li><span class="range">20.5°C - 22.8°C</span> = Nyaman Sejuk</li>
+                                  <li><span class="range">22.8°C - 25.8°C</span> = Nyaman</li>
+                                  <li><span class="range">25.8°C - 27.1°C</span> = Nyaman Hangat</li>
+                              </ul>
+                          </div>
+                          <div class="standard-category">
+                              <strong>🌪️ Kualitas Udara (PPM):</strong>
+                              <ul>
+                                  <li><span class="range">1 - 50 PPM</span> = Baik (Good) - Sangat baik, tidak berdampak negatif</li>
+                                  <li><span class="range">51 - 100 PPM</span> = Rata-rata (Average) - Masih dapat diterima untuk kesehatan</li>
+                                  <li><span class="range">101 - 200 PPM</span> = Tidak Sehat (Unhealthy) - Berbahaya bagi manusia, hewan dan tanaman</li>
+                                  <li><span class="range">201 - 300 PPM</span> = Sangat Tidak Sehat (Very Unhealthy) - Dapat meningkatkan risiko kesehatan</li>
+                                  <li><span class="range">301+ PPM</span> = Berbahaya (Dangerous) - Dapat meningkatkan risiko kesehatan yang serius</li>
+                              </ul>
+                          </div>
+                          <div class="standard-category">
+                              <strong>💧 Kelembapan:</strong>
+                              <ul>
+                                  <li><span class="range">50% - 60%</span> = Ideal untuk kondisi sejuk</li>
+                                  <li><span class="range">60% - 70%</span> = Ideal untuk kondisi hangat</li>
+                                  <li><span class="range">70% - 80%</span> = Optimal sesuai standar SNI</li>
+                              </ul>
+                          </div>
+                      </div>
+                      <div class="standard-source">
+                          <small><i>Sumber: Standar Nasional Indonesia (SNI) 6390:2011 tentang Spesifikasi Teknis Sistem Ventilasi dan Pengkondisian Udara pada Bangunan Gedung</i></small>
+                          <br>
+                          <small><i>Referensi Kualitas Udara: Sitanggang, D., et al. (2022). "Analysis of Air Quality Measuring Device Using Internet of Things-Based MQ-135 Sensor". Universitas Prima Indonesia.</i></small>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Temperature & Humidity Chart -->
+          <section id="charts" class="charts-section">
+            <h3>🌡️💧 Grafik Temperatur & Kelembapan (Per Menit)</h3>
+            <div id="line_chart"></div>
+          </section>
+
+          <!-- Air Quality Chart -->
+          <section id="air-charts" class="charts-section">
+            <h3>🌪️ Grafik Kualitas Udara (Per Menit)</h3>
+            <div id="air_chart"></div>
+          </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarBackdrop.classList.toggle('active');
+    }
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', toggleSidebar);
+    }
+
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            if (this.getAttribute('href').startsWith('#') && window.innerWidth < 768 && sidebar.classList.contains('open')) {
+                 toggleSidebar();
+            }
+        });
+    });
+
+    google.charts.load('current', { packages: ['gauge', 'corechart'] });
+    google.charts.setOnLoadCallback(initializeAllVisuals);
+
+    function initializeAllVisuals() {
+        console.log("initializeAllVisuals: Memulai...");
+        // Panggil fungsi inisialisasi dari file JS_dashboard.js
+        if (typeof initGauges === 'function') { initGauges(); }
+        if (typeof initMinuteLineChart === 'function') { initMinuteLineChart(); }
+        if (typeof fetchInitialPrediction === 'function') { fetchInitialPrediction(); }
+        console.log("initializeAllVisuals: Selesai.");
+    }
+  </script>
+  <script src="/static/js/JS_dashboard.js"></script>
+</body>
+</html>

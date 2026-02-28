@@ -1,0 +1,575 @@
+/* IoT Dashboard Styling */
+
+:root {
+  --sidebar-width: 250px;
+  --sidebar-bg-color: #2c3e50;
+  --content-bg-color: #eef1f5;
+  --card-bg-color: #ffffff;
+  --text-color-primary: #34495e;
+  --text-color-secondary: #555;
+  --header-height: 65px;
+  --status-good-color: #27ae60;
+  --status-moderate-color: #f39c12;
+  --status-bad-color: #e74c3c;
+  --status-cold-color: #3498db;
+  --status-warm-color: #e67e22;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--content-bg-color);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg-color);
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1050;
+  transform: translateX(calc(-1 * var(--sidebar-width)));
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 3px 0px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  padding: 18px 15px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 1px solid #4a5562;
+  color: #ecf0f1;
+}
+
+.sidebar-nav {
+  flex-grow: 1;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.sidebar-nav a {
+  color: #ecf0f1;
+  padding: 14px 25px;
+  display: block;
+  text-decoration: none;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+  border-left: 4px solid transparent;
+  font-size: 0.95rem;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background-color: #34495e;
+  padding-left: 28px;
+  color: #ffffff;
+  border-left-color: #1abc9c;
+}
+
+.sidebar-nav a i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  width: 100%;
+  transition: filter 0.3s ease-in-out;
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1040;
+}
+
+.sidebar-backdrop.active {
+  display: block;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  background-color: var(--card-bg-color);
+  padding: 0 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  height: var(--header-height);
+}
+
+.menu-toggle {
+  font-size: 26px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--sidebar-bg-color);
+  margin-right: 10px;
+  padding: 8px 12px;
+  line-height: 1;
+}
+
+.header-title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin: 0;
+  margin-right: 100px;
+}
+
+/* Dashboard Grid */
+.dashboard {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 20px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 15px 20px;
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
+  border-left: 2px solid var(--sidebar-bg-color);
+  border-right: 2px solid var(--sidebar-bg-color);
+}
+
+.dashboard-header h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+}
+
+.dashboard-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+}
+
+/* Gauge Container */
+.gauge-container {
+  background: var(--card-bg-color);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 270px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 2px solid var(--sidebar-bg-color);
+  border-right: 2px solid var(--sidebar-bg-color);
+}
+
+.gauge-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.gauge-container .gauge-title {
+  font-size: 1rem;
+  color: var(--text-color-primary);
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.gauge-chart-div {
+  width: 100%;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+/* Sensor Status */
+.sensor-status-text {
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 15px;
+  color: white;
+  min-width: 80px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.status-good { background-color: var(--status-good-color); }
+.status-moderate { background-color: var(--status-moderate-color); }
+.status-bad { background-color: var(--status-bad-color); }
+.status-cold { background-color: var(--status-cold-color); }
+.status-warm { background-color: var(--status-warm-color); }
+.status-ideal { background-color: var(--status-good-color); }
+.status-dry { background-color: var(--status-moderate-color); }
+.status-humid { background-color: var(--status-warm-color); }
+.status-too-humid { background-color: var(--status-bad-color); }
+
+/* Download Button Container */
+.download-btn-container {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+/* Live Clock */
+.live-clock-container {
+  position: fixed;
+  top: 0;
+  right: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.live-clock {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sidebar-bg-color);
+  color: white;
+  padding: 0 15px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.live-date {
+  background: var(--status-good-color);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-weight: bold;
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: -8px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Prediction Card */
+.prediction-card {
+  background-color: var(--card-bg-color);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+  border-left: 2px solid var(--sidebar-bg-color);
+  border-right: 2px solid var(--sidebar-bg-color);
+}
+
+.connection-status {
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+}
+
+.connection-status.connected {
+  background-color: #27ae60;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.prediction-card-header {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.prediction-card-body {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.prediction-item {
+  text-align: center;
+  flex-basis: 150px;
+}
+
+.prediction-item .icon {
+  font-size: 2.2rem;
+  color: var(--sidebar-bg-color);
+}
+
+.prediction-item .label {
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.prediction-item .value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+}
+
+.prediction-item .status {
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 2px 10px;
+  border-radius: 10px;
+  color: white;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.prediction-card-footer {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+}
+
+/* Standard Reference Card */
+.standard-reference-card {
+  background-color: var(--card-bg-color);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+  border-left: 2px solid var(--sidebar-bg-color);
+  border-right: 2px solid var(--sidebar-bg-color);
+}
+
+.standard-reference-header {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.standard-reference-body {
+  text-align: center;
+}
+
+.standard-info h5 {
+  color: var(--sidebar-bg-color);
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+}
+
+.standard-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.standard-category {
+  text-align: left;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.standard-category strong {
+  color: var(--text-color-primary);
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.standard-category ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.standard-category ul li {
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+}
+
+.standard-category .range {
+  font-weight: 600;
+  color: var(--sidebar-bg-color);
+}
+
+.standard-source {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.standard-source small {
+  color: #6c757d;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Charts Section */
+.charts-section {
+  background-color: var(--card-bg-color);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  border-left: 2px solid var(--sidebar-bg-color);
+  border-right: 2px solid var(--sidebar-bg-color);
+}
+
+.charts-section h3 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--text-color-primary);
+  font-weight: 600;
+  font-size: 1.2rem;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.charts-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sidebar-bg-color), var(--status-good-color));
+  border-radius: 2px;
+}
+
+#line_chart, #air_chart {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  transition: box-shadow 0.3s ease;
+}
+
+#line_chart:hover, #air_chart:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Different border colors for each chart and gauge */
+#charts {
+  border-left-color: #e74c3c;
+  border-right-color: #e74c3c;
+}
+
+#air-charts {
+  border-left-color: #27ae60;
+  border-right-color: #27ae60;
+}
+
+/* Specific gauge container colors - left and right borders only */
+.gauge-container:nth-child(2) { /* Temperature gauge */
+  border-left-color: #e74c3c;
+  border-right-color: #e74c3c;
+}
+
+.gauge-container:nth-child(3) { /* Humidity gauge */
+  border-left-color: #3498db;
+  border-right-color: #3498db;
+}
+
+.gauge-container:nth-child(4) { /* Air quality gauge */
+  border-left-color: #27ae60;
+  border-right-color: #27ae60;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .content { 
+    padding: 15px; 
+  }
+  
+  .header { 
+    margin-bottom: 20px; 
+  }
+  
+  .dashboard { 
+    grid-template-columns: 1fr; 
+    gap: 15px; 
+  }
+  
+  .gauge-container { 
+    height: auto; 
+    padding-bottom: 15px; 
+  }
+  
+  .dashboard-header h2 { 
+    font-size: 1.1rem; 
+  }
+  
+  .dashboard-status { 
+    flex-direction: column; 
+    gap: 10px; 
+    font-size: 0.8rem; 
+  }
+  
+  .prediction-card-body { 
+    flex-direction: column; 
+  }
+}
